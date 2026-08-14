@@ -46,6 +46,7 @@ OUTCOMES (what you GET):
 - [Encapsulation](encapsulation.md) — data hiding, controlled access, defensive copies, common violations
 - [Abstraction](abstraction.md) — interfaces, abstract classes, YAGNI, when to extract
 - [Composition vs Inheritance](composition-vs-inheritance.md) — IS-A vs HAS-A, fragile base class, decision framework
+- [Class Relationships](class-relationships.md) — Association → Aggregation → Composition spectrum, lifetime test
 
 ## Resources
 

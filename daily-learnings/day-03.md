@@ -113,5 +113,6 @@ A: "Diamond problem. Solution: multiple interfaces (contracts) + single class in
 ## Quick Links
 
 - **Detailed topic**: [Composition vs Inheritance](../topics/oops/composition-vs-inheritance.md)
+- **Detailed topic**: [Class Relationships](../topics/oops/class-relationships.md) — Association → Aggregation → Composition spectrum
 - **Related**: [Strategy Pattern](../topics/design-patterns/behavioural/strategy.md)
 - **Related**: [OOP Principles](../topics/oops/README.md)
