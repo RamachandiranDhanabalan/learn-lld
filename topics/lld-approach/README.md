@@ -153,6 +153,7 @@ Spend 60% of your design time on the heart. Sketch the rest.
 
 ## Related
 
+- [Problem-Solving Framework](problem-solving-framework.md) — Pressure → Fix → Validate (the core skill)
 - [OOP Principles](../oops/README.md)
 - [SOLID Principles](../solid/README.md)
 - [UML Diagrams](../uml/README.md)
