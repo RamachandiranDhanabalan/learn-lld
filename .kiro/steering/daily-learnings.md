@@ -109,6 +109,26 @@ inclusion: always
 
 ---
 
+## End-of-Day Practice Problem
+
+After each day's lesson and cheat sheet creation, give a **cumulative practice problem** that:
+
+1. Is a piece of code or a small design problem (not a full LLD like Parking Lot)
+2. Requires applying ALL concepts learned so far (not just today's topic)
+3. Gets progressively harder as days progress
+4. **Do NOT hint which concepts/days/topics to apply** — present the problem cold, like an interview
+5. After their answer, validate and score against all applicable concepts
+
+Format:
+- Present the problem code / scenario with zero hints
+- Ask: "Analyze this. What's wrong? How would you fix it?"
+- After their answer, validate, score, and connect back to relevant concepts
+- Show the ideal solution
+
+This builds muscle memory — the learner must independently recognize which concepts apply without being told.
+
+---
+
 ## How They Connect
 
 | When learning a new day | What happens |
