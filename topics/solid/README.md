@@ -2,73 +2,43 @@
 
 ## Overview
 
-SOLID is a set of 5 design principles that make software more maintainable, flexible, and testable.
+Five design principles that make software maintainable, flexible, and testable.
 
----
+| # | Principle | One-liner | Day |
+|---|---|---|---|
+| S | [Single Responsibility](single-responsibility.md) | One class, one reason to change | Day 5 |
+| O | [Open/Closed](open-closed.md) | Extend via new classes, don't modify existing | Day 6 |
+| L | [Liskov Substitution](liskov-substitution.md) | Subtypes must honor parent's contract | Day 6 |
+| I | [Interface Segregation](interface-segregation.md) | Don't force unused methods on clients | Day 7 |
+| D | [Dependency Inversion](dependency-inversion.md) | Depend on abstractions, not details | Day 7 |
 
-## S — Single Responsibility Principle (SRP)
+## How They Connect
 
-> A class should have only one reason to change.
+```
+SRP  → focused classes        ↔ ISP → focused interfaces (same idea, different level)
+OCP  → extend safely          ↔ LSP → extensions work correctly
+ISP  → narrow interfaces      → fixes LSP violations
+DIP  → depend on abstractions → enables OCP (new implementations without changes)
+```
 
-**Violation**: A `UserService` that handles validation, persistence, AND email sending.
-**Fix**: Split into `UserValidator`, `UserRepository`, `EmailService`.
+## Quick Reference
 
-**Interview signal**: "If I need to change how emails are sent, I shouldn't risk breaking user persistence."
-
----
-
-## O — Open/Closed Principle (OCP)
-
-> Open for extension, closed for modification.
-
-**Violation**: A `PaymentProcessor` with if-else for each payment type.
-**Fix**: `PaymentStrategy` interface with `CreditCardPayment`, `UPIPayment` implementations.
-
-**Interview signal**: "Adding a new payment method should be adding a class, not modifying existing code."
-
----
-
-## L — Liskov Substitution Principle (LSP)
-
-> Subtypes must be substitutable for their base types without breaking behavior.
-
-**Violation**: `Square extends Rectangle` where `setWidth()` also sets height.
-**Fix**: Separate classes, or use a `Shape` interface with `area()`.
-
-**Interview signal**: "If substituting a subclass breaks the caller's expectations, the hierarchy is wrong."
-
----
-
-## I — Interface Segregation Principle (ISP)
-
-> Clients should not be forced to depend on interfaces they don't use.
-
-**Violation**: A `Worker` interface with `work()`, `eat()`, `sleep()` — robots don't eat.
-**Fix**: Split into `Workable`, `Feedable`, `Restable`.
-
-**Interview signal**: "Fat interfaces force implementers to provide no-op methods, which is a design smell."
-
----
-
-## D — Dependency Inversion Principle (DIP)
-
-> High-level modules should depend on abstractions, not low-level modules.
-
-**Violation**: `OrderService` directly instantiates `MySQLOrderRepository`.
-**Fix**: `OrderService` depends on `OrderRepository` interface; inject the implementation.
-
-**Interview signal**: "This is why Spring uses DI — my service doesn't know or care if it's MySQL, Postgres, or a mock."
-
----
+| Principle | Violation Signal | Fix |
+|---|---|---|
+| SRP | Class changes for multiple unrelated reasons | Split by actor/stakeholder |
+| OCP | Adding new type = modifying existing if-else | Interface + strategy |
+| LSP | Child throws or behaves differently than parent promises | Narrow the interface or use composition |
+| ISP | Implementer has no-op methods or throws UnsupportedOp | Split into focused interfaces |
+| DIP | `new ConcreteClass()` in business logic, can't mock | Interface + constructor injection |
 
 ## Resources
 
-- [Refactoring Guru — SOLID](https://refactoring.guru/refactoring/smells)
-- [Uncle Bob's Clean Code Blog](https://blog.cleancoder.com)
-- [Baeldung — SOLID in Java](https://www.baeldung.com/solid-principles)
+- [Baeldung — SOLID](https://www.baeldung.com/solid-principles)
+- [Refactoring Guru — SOLID](https://refactoring.guru/design-patterns)
+- [Clean Architecture (Robert Martin)](https://www.oreilly.com/library/view/clean-architecture/9780134494272/)
 
 ## Related
 
-- [OOP Principles](../oops/README.md)
-- [Design Patterns](../design-patterns/README.md) — patterns that enforce SOLID
-- [Examples](examples/)
+- [Cohesion and Coupling](../oops/cohesion-and-coupling.md) — SOLID achieves high cohesion + low coupling
+- [Design Patterns](../design-patterns/README.md) — patterns implement SOLID principles
+- [Problem-Solving Framework](../lld-approach/problem-solving-framework.md) — pressures map to SOLID violations
