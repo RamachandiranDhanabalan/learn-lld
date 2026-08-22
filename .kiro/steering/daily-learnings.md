@@ -114,10 +114,12 @@ inclusion: always
 After each day's lesson and cheat sheet creation, give a **cumulative practice problem** that:
 
 1. Is a piece of code or a small design problem (not a full LLD like Parking Lot)
-2. Requires applying ALL concepts learned so far (not just today's topic)
+2. Requires applying ALL concepts learned so far (from Day 01 to current day)
 3. Gets progressively harder as days progress
 4. **Do NOT hint which concepts/days/topics to apply** — present the problem cold, like an interview
 5. After their answer, validate and score against all applicable concepts
+6. **If a single problem can't test all concepts**: rotate — today's problem covers concepts A, B, C; tomorrow's covers D, E, F. Over 2-3 days, all concepts from Day 01 onward get exercised.
+7. Track which concepts haven't appeared recently and include them in the next problem
 
 Format:
 - Present the problem code / scenario with zero hints
@@ -126,6 +128,16 @@ Format:
 - Show the ideal solution
 
 This builds muscle memory — the learner must independently recognize which concepts apply without being told.
+
+---
+
+## Practice Problem Code Files
+
+Practice problem solutions go in `practice-problems/src/main/java/com/learn/lld/`.
+
+**Naming convention**: `Day<NN><TopicName>.java`
+- Example: `Day09AbstractFactory.java`, `Day15Strategy.java`
+- File includes a Javadoc header explaining the problem, the grid (if applicable), and the solution approach.
 
 ---
 
