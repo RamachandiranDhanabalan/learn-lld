@@ -114,12 +114,32 @@ inclusion: always
 After each day's lesson and cheat sheet creation, give a **cumulative practice problem** that:
 
 1. Is a piece of code or a small design problem (not a full LLD like Parking Lot)
-2. Requires applying ALL concepts learned so far (from Day 01 to current day)
+2. **MUST contain pressures from ALL major concept areas learned so far** — not just today's topic
 3. Gets progressively harder as days progress
 4. **Do NOT hint which concepts/days/topics to apply** — present the problem cold, like an interview
 5. After their answer, validate and score against all applicable concepts
 6. **If a single problem can't test all concepts**: rotate — today's problem covers concepts A, B, C; tomorrow's covers D, E, F. Over 2-3 days, all concepts from Day 01 onward get exercised.
 7. Track which concepts haven't appeared recently and include them in the next problem
+
+### Concept Checklist (include as many as possible in each problem):
+
+When designing a practice problem, intentionally embed these pressures:
+
+- [ ] **Encapsulation** — public fields, leaky getters, missing validation
+- [ ] **Abstraction** — missing interface, or premature abstraction
+- [ ] **Composition vs Inheritance** — wrong IS-A, or missing HAS-A
+- [ ] **Cohesion/Coupling** — god class, concrete dependencies
+- [ ] **SRP** — class does multiple unrelated things
+- [ ] **OCP** — if-else that grows with types
+- [ ] **LSP** — child breaks parent contract (throw UnsupportedOp)
+- [ ] **ISP** — fat interface forcing no-op implementations
+- [ ] **DIP** — new ConcreteClass() in business logic
+- [ ] **Factory** — object creation scattered in business logic, hardcoded type selection
+- [ ] **Builder** — object with many optional params constructed via setters/telescoping constructor
+- [ ] **Strategy** — behavior varies but implemented as if-else instead of polymorphism
+
+The problem code should have AT LEAST 5-6 of these embedded simultaneously.
+The learner's job is to identify ALL of them without hints.
 
 Format:
 - Present the problem code / scenario with zero hints
