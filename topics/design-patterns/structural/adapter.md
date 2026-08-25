@@ -1,55 +1,158 @@
 # Adapter Pattern
 
 ## Intent
-Convert the interface of a class into another interface that clients expect.
+
+Make incompatible interfaces work together by wrapping one class and translating its interface to match what the client expects. The "integration glue" pattern.
 
 ## Problem It Solves
-- You have an existing class with useful functionality but incompatible interface
-- You can't modify the existing class (third-party, legacy)
-- You want to reuse existing code with a new system
 
-## Java Example
+- Third-party SDK has useful functionality but incompatible interface
+- You can't modify the existing class (third-party, legacy, another team)
+- You want a uniform interface over multiple heterogeneous systems
+- Migrating from one system to another incrementally
+
+---
+
+## Structure
+
+```
+CLIENT → uses TARGET interface
+ADAPTER implements TARGET, wraps ADAPTEE
+ADAPTEE = the existing class with incompatible interface
+
+Client → Target Interface ← Adapter → Adaptee (foreign class)
+```
+
+---
+
+## Example: Payment SDK Integration
 
 ```java
-// Target interface (what our system expects)
-public interface PaymentGateway {
-    PaymentResponse charge(String customerId, BigDecimal amount);
+// TARGET — what your system expects
+interface PaymentGateway {
+    PaymentResult charge(String customerId, BigDecimal amount);
 }
 
-// Adaptee (third-party SDK with different interface)
-public class StripeSDK {
-    public StripeCharge createCharge(StripeChargeRequest request) { ... }
+// ADAPTEE — third-party with different interface (can't modify)
+class StripeSDK {
+    StripeCharge createCharge(StripeChargeRequest request) { ... }
 }
 
-// Adapter
-public class StripePaymentAdapter implements PaymentGateway {
-    private final StripeSDK stripe;
+// ADAPTER — bridges them
+class StripePaymentAdapter implements PaymentGateway {
+    private final StripeSDK stripe;  // wraps adaptee (composition)
 
-    public StripePaymentAdapter(StripeSDK stripe) {
-        this.stripe = stripe;
-    }
+    StripePaymentAdapter(StripeSDK stripe) { this.stripe = stripe; }
 
     @Override
-    public PaymentResponse charge(String customerId, BigDecimal amount) {
-        StripeChargeRequest request = new StripeChargeRequest(customerId, amount.intValue());
-        StripeCharge charge = stripe.createCharge(request);
-        return new PaymentResponse(charge.getId(), charge.getStatus());
+    public PaymentResult charge(String customerId, BigDecimal amount) {
+        // TRANSLATE: our interface → Stripe's interface
+        StripeChargeRequest req = new StripeChargeRequest();
+        req.setCustomer(customerId);
+        req.setAmount(amount.multiply(BigDecimal.valueOf(100)).longValue()); // dollars → cents
+
+        StripeCharge charge = stripe.createCharge(req);
+
+        // TRANSLATE: Stripe's response → our response
+        return new PaymentResult(charge.getId(), charge.getStatus().equals("succeeded"));
     }
+}
+
+// CLIENT — doesn't know about Stripe
+class OrderService {
+    private final PaymentGateway gateway;  // uses target interface
+    OrderService(PaymentGateway gateway) { this.gateway = gateway; }
 }
 ```
 
+---
+
+## What Adapter Does
+
+| Job | How |
+|---|---|
+| Translates interface | Converts method signatures (our method → their method) |
+| Translates data | Converts formats (BigDecimal → cents, our DTO → their DTO) |
+| Wraps the adaptee | Composition (HAS-A), delegates calls |
+| Implements the target | Looks like target interface to the client |
+| Doesn't modify either | Target and adaptee remain unchanged |
+
+---
+
 ## When to Use
-- Integrating third-party libraries
-- Migrating from one system to another incrementally
-- Creating a uniform interface over heterogeneous systems
 
-## Trade-offs
+| Signal | Example |
+|---|---|
+| Third-party SDK with different interface | Stripe, Twilio, AWS SDKs |
+| Migrating systems incrementally | Old payment → new, keep same interface |
+| Uniform interface over multiple providers | Multiple SMS providers behind one `SmsService` |
+| Legacy class with wrong interface | Old `XmlParser` needs new `DataProcessor` interface |
+| Can't modify the existing class | Third-party, compiled, another team |
 
-| Pros | Cons |
-|------|------|
-| Single Responsibility (conversion logic isolated) | Extra layer of indirection |
-| Open/Closed (new adapters without changing client) | Can mask complexity of adaptee |
-| Testability (mock the target interface) | |
+## When NOT to Use
+
+| Signal | Use Instead |
+|---|---|
+| You control both sides | Redesign directly |
+| Adaptation is trivial (one method rename) | Over-engineering |
+| You're adapting your own new classes | Design them compatible from the start |
+
+---
+
+## Adapter vs Other Structural Patterns
+
+| Pattern | What It Does | Key Difference |
+|---|---|---|
+| **Adapter** | Translates interface A → B | Changes interface, NOT behavior |
+| **Decorator** | Adds behavior to existing object | Same interface, adds functionality |
+| **Facade** | Simplifies complex subsystem | Wraps MANY classes, defines new simple interface |
+| **Proxy** | Controls access to an object | Same interface, adds control (cache, auth, lazy) |
+
+---
+
+## Object Adapter vs Class Adapter
+
+| | Object Adapter (Composition) | Class Adapter (Inheritance) |
+|---|---|---|
+| Structure | HAS-A adaptee | EXTENDS adaptee |
+| Flexibility | Can adapt any subclass of adaptee | Locked to one class |
+| Java fit | ✅ Always prefer | ❌ Single inheritance limits |
+
+---
+
+## Adapter vs Strategy — The Distinction
+
+| | Adapter | Strategy |
+|---|---|---|
+| Intent | "Translate incompatible foreign interface" | "Swap interchangeable algorithms" |
+| What's inside | Wraps another class, translates its output | Has its own logic directly |
+| When | Third-party/legacy you can't modify | Your own algorithms you designed |
+| Structure | Same (interface + implementations) | Same (interface + implementations) |
+
+From the caller's perspective, both look identical. The pattern name describes **intent**, not structure.
+
+---
+
+## Adapter in Spring Boot
+
+| Where | Usage |
+|---|---|
+| Payment integration | Stripe/Razorpay SDK → your `PaymentGateway` interface |
+| Email provider | SendGrid/SES → your `EmailService` interface |
+| Legacy migration | Old API response → new internal DTO |
+| Testing | `InMemoryPaymentAdapter` for tests |
+| Database | Different DB clients → your `Repository` interface |
+
+---
 
 ## Resources
+
 - [Refactoring Guru — Adapter](https://refactoring.guru/design-patterns/adapter)
+- [Baeldung — Adapter Pattern](https://www.baeldung.com/java-adapter-pattern)
+
+## Related
+
+- [Decorator](decorator.md) — same structure but adds behavior (not translates)
+- [Facade](facade.md) — wraps many classes, simplifies
+- [Strategy](../behavioural/strategy.md) — same structure but different intent (own algorithms vs foreign translation)
+- [DIP](../../solid/dependency-inversion.md) — Adapter enables depending on your interface, not the foreign class
