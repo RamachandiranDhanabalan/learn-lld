@@ -1,67 +1,136 @@
 # Decorator Pattern
 
 ## Intent
-Attach additional responsibilities to an object dynamically. An alternative to subclassing for extending functionality.
+
+Add behavior to an object **dynamically** without modifying its class or subclassing. Stack multiple behaviors freely in any combination.
 
 ## Problem It Solves
-- Need to add behavior to individual objects, not the whole class
-- Want to combine behaviors freely (like toppings on pizza)
-- Inheritance explosion when combining features
 
-## Java Example
+- Need to combine behaviors freely (5 options → 2^5 = 32 subclasses with inheritance)
+- Want to add/remove behavior at runtime
+- Avoid modifying existing classes to add new functionality
+
+---
+
+## Structure
+
+```
+Component (interface)           ← the contract
+├── ConcreteComponent           ← base behavior (e.g., EmailSender)
+├── BaseDecorator (abstract)    ← optional: DRYs the wrapping logic
+    ├── DecoratorA              ← adds behavior A (e.g., Logging)
+    ├── DecoratorB              ← adds behavior B (e.g., Retry)
+    └── DecoratorC              ← adds behavior C (e.g., Encryption)
+```
+
+Key: Decorator implements the SAME interface as what it wraps. That enables stacking.
+
+---
+
+## Example
 
 ```java
-// Component interface
-public interface DataSource {
-    void writeData(String data);
-    String readData();
+interface DataSource {
+    byte[] read();
+    void write(byte[] data);
 }
 
-// Base implementation
-public class FileDataSource implements DataSource {
-    private final String filename;
-    public void writeData(String data) { /* write to file */ }
-    public String readData() { /* read from file */ }
+class FileDataSource implements DataSource {
+    public byte[] read() { /* read from file */ }
+    public void write(byte[] data) { /* write to file */ }
 }
 
-// Base decorator
-public abstract class DataSourceDecorator implements DataSource {
-    protected final DataSource wrappee;
-    public DataSourceDecorator(DataSource source) { this.wrappee = source; }
+class EncryptionDecorator implements DataSource {
+    private final DataSource wrapped;
+    EncryptionDecorator(DataSource wrapped) { this.wrapped = wrapped; }
+
+    public byte[] read() { return decrypt(wrapped.read()); }
+    public void write(byte[] data) { wrapped.write(encrypt(data)); }
 }
 
-// Concrete decorators
-public class EncryptionDecorator extends DataSourceDecorator {
-    public void writeData(String data) { wrappee.writeData(encrypt(data)); }
-    public String readData() { return decrypt(wrappee.readData()); }
+class CompressionDecorator implements DataSource {
+    private final DataSource wrapped;
+    CompressionDecorator(DataSource wrapped) { this.wrapped = wrapped; }
+
+    public byte[] read() { return decompress(wrapped.read()); }
+    public void write(byte[] data) { wrapped.write(compress(data)); }
 }
 
-public class CompressionDecorator extends DataSourceDecorator {
-    public void writeData(String data) { wrappee.writeData(compress(data)); }
-    public String readData() { return decompress(wrappee.readData()); }
-}
-
-// Usage — compose behaviors freely
+// Stack freely:
 DataSource source = new CompressionDecorator(
     new EncryptionDecorator(
         new FileDataSource("data.txt")
     )
 );
-source.writeData("secret"); // compressed → encrypted → written to file
 ```
 
+---
+
+## How to Build (Steps)
+
+```
+1. Define Component interface (what operations exist)
+2. Create ConcreteComponent (base behavior)
+3. Create Decorator class: implements SAME interface, wraps SAME interface via HAS-A
+4. In each method: do your added behavior BEFORE or AFTER delegating to wrapped
+5. Stack: new DecoratorA(new DecoratorB(new ConcreteComponent()))
+```
+
+Optional: Abstract base decorator to DRY the field + constructor across decorators.
+
+---
+
+## Key Characteristics
+
+| Aspect | Description |
+|---|---|
+| Same interface | Decorator implements same interface as wrapped object |
+| Composition | HAS-A reference to another object of same type |
+| Stackable | Multiple decorators wrap each other in any order |
+| Transparent | Client doesn't know how many layers exist |
+| OCP | New behavior = new decorator class, no modification |
+| Linear growth | N behaviors = N classes (not 2^N) |
+
+---
+
+## Decorator vs Inheritance
+
+| | Decorator | Subclassing |
+|---|---|---|
+| Combine behaviors | Any combination at runtime | Class per combination (explosion) |
+| Growth | Linear (N classes) | Exponential (2^N) |
+| Runtime flexibility | ✅ Add/remove anytime | ❌ Fixed at compile time |
+| Primary driver | Composability without explosion | — |
+
+---
+
+## When to Use
+
+| Signal | Why Decorator |
+|---|---|
+| "Add logging/retry/caching to calls" | Stack on top without modifying original |
+| "Combine behaviors in any order" | Each decorator is independent, composable |
+| "Class explosion from combinations" | Replace inheritance tree with decorators |
+| "Add behavior without modifying existing" | OCP via wrapping |
+
+---
+
 ## Real-World Java
-- `java.io` streams: `BufferedReader(new InputStreamReader(new FileInputStream(...)))`
-- `Collections.synchronizedList()`, `Collections.unmodifiableList()`
-- Spring `HandlerInterceptor`
 
-## Trade-offs
+- `BufferedReader(new InputStreamReader(new FileInputStream(...)))` — Java I/O
+- `Collections.synchronizedList(list)` — adds thread-safety
+- `Collections.unmodifiableList(list)` — adds immutability
+- Spring `HandlerInterceptor` — adds pre/post processing
 
-| Pros | Cons |
-|------|------|
-| Combine behaviors without class explosion | Many small objects |
-| Add/remove at runtime | Hard to remove a specific wrapper from middle |
-| Single Responsibility per decorator | Order of decoration matters |
+---
 
 ## Resources
+
 - [Refactoring Guru — Decorator](https://refactoring.guru/design-patterns/decorator)
+- [Baeldung — Decorator](https://www.baeldung.com/java-decorator-pattern)
+
+## Related
+
+- [Proxy](proxy.md) — same structure, different intent (control access vs add behavior)
+- [Adapter](adapter.md) — wraps DIFFERENT interface. Decorator wraps SAME interface.
+- [Strategy](../behavioural/strategy.md) — swaps algorithm. Decorator adds to existing behavior.
