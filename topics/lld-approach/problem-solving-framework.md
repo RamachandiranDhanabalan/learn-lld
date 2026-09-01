@@ -8,6 +8,28 @@
 STEP 1: Scan for pressures → STEP 2: Apply fix → STEP 3: Validate
 ```
 
+> For **design-from-scratch** problems (not refactoring), first identify entities using the
+> Entity-Discovery Checklist below, THEN apply the pressure framework to the design.
+
+---
+
+## Entity-Discovery Checklist (Design-From-Scratch Problems)
+
+Obvious physical nouns are easy. Entities that HIDE INSIDE VERBS are commonly missed.
+
+| Question | Catches |
+|----------|---------|
+| What are the obvious physical things? | Easy nouns (Elevator, Book) |
+| **What FLOWS through the system?** | Request, Event, Message, Command |
+| What has a lifecycle / states? | Order, Elevator (stateful) |
+| What do I store in List/Map/Queue? | Collection items |
+| What gets CREATED then CONSUMED? | Request, Ticket, Job, Transaction |
+| What represents a USER ACTION? | Command, Request, Event |
+
+**Trigger question**: "When a user does something, what OBJECT represents that action?" → usually the missed entity (button press → Request, place order → Order).
+
+**Entity vs Service**: Nouns with state → Entities. Verbs/actions → Service methods (Dispatcher, OrderService are services, not entities).
+
 ---
 
 ## STEP 1: Scan for Pressures

@@ -1,5 +1,6 @@
 package com.learn.lld;
 
+import java.security.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -251,5 +252,85 @@ class Day12AdapterPattern {
         dashboard.loadAndRender(request);
         String csv = dashboard.loadAndExport(request);
         System.out.println(csv);
+    }
+}
+
+
+class ChatApp {
+    public void main(String[] args) {
+
+        // Create chat space
+        // Add users to space
+        // Send a message
+        // Notify all the users of the chat space about the message
+        ChatService chatService = new ChatService();
+        Chat chat = chatService.create("ChatName");
+
+        chat.addMember();
+        chat.sendMessage("Hello..");
+    }
+}
+
+class MessageEvent {
+    private final Chat chat;
+    private final Message message;
+
+    // getters and setters with returning unmodfiable object
+}
+class Chat {
+    private String access;
+    private List<User> users = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
+    private User owner;
+    private List<MessageNotifier> observers = new ArrayList<>();
+
+     public void register(MessageNotifier messageNotifier) {
+        observers.add(messageNotifier);
+    }
+
+    public void unsubscribe(MessageNotifier messageNotifier) {
+        observers.remove(messageNotifier);
+    }
+
+    public void notifyMembers(Message message) {
+        MessageEvent event = new MessageEvent(this, message);
+        for(MessageNotifier notifier: observers) {
+            notifier.notify();
+        }
+    }
+
+    // getters and setters
+    public void addMember(User user) {
+        users.add(user);
+    }
+
+    public void leaveChat(User user) {
+        users.remove(user);
+    }
+
+    public void sendMessage(Message message) {
+        messages.add(message);
+        notifyMembers(message);
+    }
+}
+
+class Message {
+    private String message;
+    private User sender;
+    private Timestamp time;
+
+    // getters and setters
+}
+
+interface MessageNotifier {
+    void notify(MessageEvent event);
+}
+
+class UserNotifier implements MessageNotifier {
+    public void notify(MessageEvent event) {
+        Chat chat = event.getChat();
+        for(User user: chat.getUsers()) {
+            // send notification
+        }
     }
 }

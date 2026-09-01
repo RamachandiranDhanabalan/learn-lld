@@ -89,6 +89,46 @@ Relations → User HAS-A MusicPlayer, Playlist HAS-MANY Songs
 
 ---
 
+## Entity-Discovery Checklist (Don't Miss Hidden Entities)
+
+Obvious physical nouns (Elevator, Floor, User) are easy. But many entities HIDE INSIDE VERBS — the "action-things" that flow through the system. These are the most commonly missed.
+
+Run through ALL these questions, not just "list the nouns":
+
+| Question | Catches | Example |
+|----------|---------|---------|
+| What are the obvious physical things? | Easy nouns | Elevator, Floor, Book |
+| **What FLOWS through the system?** | **Request, Event, Message, Command** | Button press → **Request** |
+| What has a lifecycle / multiple states? | Stateful entities | Order (states), Elevator (states) |
+| What do I store in a List/Map/Queue? | Collection items | `List<Request>`, `Queue<Job>` |
+| What gets CREATED then CONSUMED? | Transient entities | Request, Ticket, Job, Transaction |
+| What represents a USER ACTION? | Action objects | Command, Request, Event |
+
+### The Key Trigger Question
+
+> **"When a user does something, what OBJECT is created to represent that action?"**
+
+That object is usually a MISSED entity:
+- User presses button → **Request** created
+- User places order → **Order** created
+- User sends message → **Message** created
+- Payment happens → **Transaction** created
+- User schedules task → **Job** created
+
+### Entity vs Service (Two Kinds of Classes)
+
+| Type | What It Is | Design Rules | Examples |
+|------|-----------|--------------|----------|
+| **Entity / Domain object** | A "thing" — has identity + state (from NOUNS) | Encapsulation, immutability, holds state | Elevator, Request, Order |
+| **Service / Controller** | A "doer" — orchestrates, holds logic (from VERBS) | Stateless, injected deps, holds business logic | Dispatcher, OrderService |
+
+- Nouns with identity + state → **Entities**
+- Verbs / actions ("assign", "dispatch", "schedule") → **Service methods** in a service class
+
+Example (Elevator): `Elevator`, `Request`, `Floor` are entities. `Dispatcher` (assigns requests) is a service — it's the "doer," not a "thing."
+
+---
+
 ## Finding "The Heart"
 
 Before designing everything equally, ask: **"Where does the most complex behavior live?"**
