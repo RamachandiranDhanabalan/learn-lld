@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import sun.misc.Signal;
+
 /**
  * Day 16 Practice — Chat Application (Design From Scratch)
  *
@@ -194,3 +196,141 @@ class Day16ChatApplication {
         // [AUDIT] Alice in General: Hello everyone!
     }
 }
+
+
+class TrafficSystemClient {
+    public void main(String[] args) {
+        // Switch on the traffic system
+    }
+}
+
+enum Signal {
+    NORTH(),
+    EAST(),
+    SOUTH(),
+    WEST();
+
+    private SignalState state;
+    private Signal nextSignal;
+
+    Signal() {
+        this.state = new RedState();
+    }
+
+    static {
+        NORTH.setNextSignal(EAST);
+        EAST.setNextSignal(SOUTH);
+        SOUTH.setNextSignal(WEST);
+        WEST.setNextSignal(NORTH);
+    }
+
+    public void setNextSignal(Signal next) {
+        this.nextSignal = next;
+    }
+
+    public Signal getNextSignal() {
+        return this.nextSignal;
+    }
+
+    public void setState(SignalState state) {
+        this.state = state;
+    }
+
+    public SignalState getState() {
+        return this.state;
+    }
+}
+
+interface SignalState {
+    void setYellow(Signal signal);
+    void setGreen(Signal signal);
+    void setRed(Signal signal);
+}
+
+class RedState implements SignalState {
+
+    @Override
+    public void setYellow(Signal signal) {
+        System.out.print("can't go to yellow");
+    }
+
+    @Override
+     public void setGreen(Signal signal) {
+        // logics to implement how long RED stays
+        signal.setState(new GreenState());
+        // Ensure other signals are set to RED state
+        // Wait logic for 30 s
+        signal.getState().setYellow(signal);
+    }
+
+    @Override
+    public void setRed(Signal signal) {
+        System.out.print("Already at yellow");
+    }
+}
+
+class GreenState implements SignalState {
+
+    @Override
+    public void setYellow(Signal signal) {
+        signal.setState(new YellowState());
+        // Wait logic for 5 s
+        signal.getState().setRed(signal);
+    }
+
+    @Override
+     public void setGreen(Signal signal) {
+        System.out.print("Already at Green");
+    }
+
+    @Override
+    public void setRed(Signal signal) {
+        System.out.print("Can't set to RED directly");
+    }
+}
+
+class YellowState implements SignalState {
+
+    @Override
+    public void setYellow(Signal signal) {
+        System.out.print("Already at Yello");
+    }
+
+    @Override
+     public void setGreen(Signal signal) {
+        System.out.print("Can't set to Green directly");
+    }
+
+    @Override
+    public void setRed(Signal signal) {
+        signal.setState(new RedState());
+    }
+}
+
+class TrafficSystem {
+    private Signal currentSignal;
+    private boolean stopTrafficSystem;
+
+    TrafficSystem() {
+        this.currentSignal = Signal.NORTH;
+        this.stopTrafficSystem = false;
+    }
+
+    public void autoDivertTraffic() {
+       while(!stopTrafficSystem) {
+            currentSignal.getState().setGreen(currentSignal);
+            // above will complete the entire life cycle (Utill Red)
+
+            this.currentSignal = currentSignal.getNextSignal();
+       }
+    }
+
+    public void emergencyStop() {
+        // Set all signals state to ReadState irrespective of other state
+    }
+
+    public void stopTrafficSystem() {
+        this.stopTrafficSystem = true;
+    }
+}
+
