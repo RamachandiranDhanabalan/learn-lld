@@ -152,6 +152,3 @@ class Day18Command {
         System.out.println(editor.getContent());  // Hello World (delete undone)
     }
 }
-
-
-
