@@ -1,69 +1,143 @@
 # Chain of Responsibility Pattern
 
 ## Intent
-Pass a request along a chain of handlers. Each handler decides to process or pass to the next.
+
+Pass a request along a chain of handlers. Each handler decides to process it, reject/stop, or pass it to the next. The sender doesn't know which handler will handle it.
 
 ## Problem It Solves
-- Multiple objects might handle a request, and the handler isn't known in advance
-- Avoid coupling the sender to a specific receiver
-- Dynamic ordering of handlers
 
-## Java Example
+- A request needs multiple checks/handlers in sequence
+- Each check is independent and may pass, reject, or escalate
+- You want to add/remove/reorder handlers without changing existing code
+
+---
+
+## Two Flavors
+
+### 1. Single Handler (classic) — stops when handled
+
+One handler fully handles the request, others just pass along.
 
 ```java
-// Handler interface
-public abstract class ValidationHandler {
-    private ValidationHandler next;
+// Loan approval: first capable approver approves it, chain stops
+class LoanApprovalHandler {
+    private LoanApprovalHandler next;
+    private int allowedLimit;
+    private String role;
 
-    public ValidationHandler setNext(ValidationHandler next) {
-        this.next = next;
-        return next;
-    }
-
-    public ValidationResult validate(Request request) {
-        ValidationResult result = doValidate(request);
-        if (!result.isValid()) return result;
-        if (next != null) return next.validate(request);
-        return ValidationResult.valid();
-    }
-
-    protected abstract ValidationResult doValidate(Request request);
-}
-
-// Concrete handlers
-public class AuthenticationHandler extends ValidationHandler {
-    protected ValidationResult doValidate(Request request) {
-        if (request.getToken() == null) return ValidationResult.fail("No auth token");
-        return ValidationResult.valid();
+    void approve(int amount) {
+        if (amount <= allowedLimit) {
+            System.out.println(role + " approved");  // STOP
+        } else if (next != null) {
+            next.approve(amount);  // escalate
+        } else {
+            System.out.println("Rejected");  // chain exhausted
+        }
     }
 }
-
-public class RateLimitHandler extends ValidationHandler {
-    protected ValidationResult doValidate(Request request) {
-        if (isRateLimited(request.getClientId())) return ValidationResult.fail("Rate limited");
-        return ValidationResult.valid();
-    }
-}
-
-public class InputSanitizationHandler extends ValidationHandler {
-    protected ValidationResult doValidate(Request request) {
-        if (containsSQLInjection(request.getBody())) return ValidationResult.fail("Unsafe input");
-        return ValidationResult.valid();
-    }
-}
-
-// Usage
-ValidationHandler chain = new AuthenticationHandler();
-chain.setNext(new RateLimitHandler())
-     .setNext(new InputSanitizationHandler());
-
-ValidationResult result = chain.validate(request);
+// Clerk(5k) → Manager(50k) → Director(500k)
 ```
 
-## Real-World Java
-- Servlet Filters / Spring `HandlerInterceptor`
-- Exception handler chains
-- Approval workflows (manager → director → VP)
+### 2. Pipeline — all handlers participate
+
+Request passes through ALL handlers. Each decides to process or skip.
+
+```java
+// Logging: message passes through all loggers
+abstract class LogHandler {
+    private LogHandler next;
+    private List<String> allowedLevels;
+
+    void log(Log msg) {
+        if (allowedLevels.contains(msg.getType())) {
+            process(msg);  // this handler cares — process
+        }
+        if (next != null) {
+            next.log(msg);  // ALWAYS pass to next (pipeline)
+        }
+    }
+    abstract void process(Log msg);
+}
+// ConsoleLogger(ALL) → FileLogger(INFO+) → EmailLogger(ERROR)
+```
+
+---
+
+## CoR vs Decorator (The Cousin)
+
+| | Decorator | CoR |
+|---|---|---|
+| Always delegates? | YES — always calls next | NO — may STOP the chain |
+| Purpose | ADD behavior (all layers run) | FIND handler or FILTER (may stop) |
+| Test | Do ALL links always run? → Decorator | Can one STOP? → CoR |
+
+---
+
+## Constructor vs Method Params
+
+| Value | Where | Why |
+|---|---|---|
+| Handler config (limit, role, levels) | Constructor | Fixed for the handler's lifetime |
+| Next handler | Constructor or setNext | Chain structure, set up once |
+| Request data (amount, log message) | Method parameter | Changes every call |
+
+> Constructor = what defines this handler. Method param = what varies per request.
+
+---
+
+## When Handlers Differ Only in Data (Not Logic)
+
+If all handlers have identical logic and only differ in data (denomination, limit) → one parameterized class, no subclasses:
+
+```java
+CashHandler atm = new CashHandler(2000);
+atm.setNext(new CashHandler(500));
+// No Rs2000Handler, Rs500Handler classes needed
+```
+
+Override `process()` only when each handler does genuinely DIFFERENT work (auth vs validation vs rate-limit).
+
+---
+
+## When to Use CoR
+
+| Signal | Example |
+|---|---|
+| Sequential checks/validations | Auth → RateLimit → Validate |
+| Escalation | L1 → L2 → L3 support |
+| Approval levels | Clerk → Manager → Director |
+| Filtering pipeline | Servlet filters, middleware |
+
+## When NOT to Use
+
+| Signal | Use Instead |
+|---|---|
+| Simple fixed sequence, never changes | if-else is fine |
+| All observers must react simultaneously | Observer (not sequential CoR) |
+| Need undo/queue | Command |
+
+---
+
+## Real-World CoR
+
+| Where | Chain |
+|---|---|
+| Servlet Filters | Auth → CORS → Logging |
+| Spring Security | Filter chain |
+| Middleware (Express) | Request processing |
+| Approval workflow | Employee → Manager → VP |
+| ATM dispensing | ₹2000 → ₹500 → ₹100 |
+| Logging levels | Console → File → Email |
+| Exception handling | Try handlers until one catches |
+
+---
 
 ## Resources
-- [Refactoring Guru — Chain of Responsibility](https://refactoring.guru/design-patterns/chain-of-responsibility)
+
+- [Refactoring Guru — CoR](https://refactoring.guru/design-patterns/chain-of-responsibility)
+
+## Related
+
+- [Decorator](../structural/decorator.md) — same structure, always delegates (vs may stop)
+- [Observer](observer.md) — all react simultaneously (vs sequential chain)
+- [Command](command.md) — one action (vs chain of handlers)
