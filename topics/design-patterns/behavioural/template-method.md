@@ -1,70 +1,115 @@
 # Template Method Pattern
 
 ## Intent
-Define the skeleton of an algorithm in a method, deferring some steps to subclasses.
+
+Define the skeleton of an algorithm in a base class, letting subclasses override specific steps without changing the algorithm's structure.
 
 ## Problem It Solves
-- Multiple classes share the same algorithm structure but differ in specific steps
-- Avoid code duplication of the overall flow
-- Control the order of operations while allowing customization
 
-## Java Example
+- Multiple classes share the SAME flow but differ in individual steps
+- Avoid duplicating the overall algorithm structure
+- Control the order of operations while allowing step customization
+
+---
+
+## Structure
 
 ```java
-// Abstract class with template method
-public abstract class DataImportJob {
-
-    // Template method — defines the algorithm skeleton
-    public final void execute() {
-        connect();
-        List<Record> records = extractData();
-        List<Record> transformed = transformData(records);
-        loadData(transformed);
-        disconnect();
-        notifyCompletion();
+abstract class DataProcessor {
+    // TEMPLATE METHOD — final, defines the fixed flow
+    public final void process() {
+        openFile();
+        List<Row> data = parse();   // varies — abstract
+        validate(data);             // shared
+        save(data);                 // shared
+        closeFile();
     }
 
-    protected abstract void connect();
-    protected abstract List<Record> extractData();
-    protected abstract void disconnect();
+    protected abstract List<Row> parse();  // subclass MUST implement
 
-    // Hook — optional override
-    protected List<Record> transformData(List<Record> records) {
-        return records; // default: no transformation
-    }
+    private void openFile() { }    // shared steps
+    private void validate(List<Row> d) { }
+    private void save(List<Row> d) { }
 
-    protected void loadData(List<Record> records) { /* common DB insert */ }
-    protected void notifyCompletion() { /* common notification */ }
+    protected void beforeSave() { }  // HOOK — optional override
 }
 
-// Concrete implementation
-public class CSVImportJob extends DataImportJob {
-    protected void connect() { /* open file */ }
-    protected List<Record> extractData() { /* parse CSV */ }
-    protected void disconnect() { /* close file */ }
-}
-
-public class APIImportJob extends DataImportJob {
-    protected void connect() { /* establish HTTP connection */ }
-    protected List<Record> extractData() { /* call REST API */ }
-    protected void disconnect() { /* close connection */ }
-    protected List<Record> transformData(List<Record> records) { /* map API response */ }
+class CsvProcessor extends DataProcessor {
+    protected List<Row> parse() { /* CSV */ }  // fills the varying step
 }
 ```
 
-## Real-World Java
-- Spring `JdbcTemplate`, `RestTemplate`
-- `AbstractList.get()` → subclass implements
-- Servlet `HttpServlet.service()` dispatches to `doGet()`, `doPost()`
+---
+
+## Key Characteristics
+
+| Aspect | Description |
+|---|---|
+| Fixed skeleton | Base class owns the flow (order of steps) |
+| `final` template method | Subclasses can't change the flow, only steps |
+| Abstract steps | Subclass MUST implement (forced variation) |
+| Hooks | Subclass MAY override (optional variation) |
+| Inheritance-based | Uses `extends` |
+
+---
+
+## Hooks vs Abstract Steps
+
+| Abstract Method | Hook |
+|---|---|
+| Subclass MUST implement | Subclass MAY override |
+| No default | Has a default (empty or a value) |
+| Forces variation | Allows optional variation |
+
+```java
+protected abstract void charge(int amount);  // MUST implement
+protected void detectFraud() { }             // hook — MAY override (default: nothing)
+protected boolean wantsCondiments() { return true; }  // hook controlling optional step
+```
+
+---
 
 ## Template Method vs Strategy
 
-| Template Method | Strategy |
-|----------------|----------|
-| Inheritance (IS-A) | Composition (HAS-A) |
-| Compile-time binding | Runtime binding |
-| Controls the overall flow | Controls one step |
-| Fewer classes | More flexible |
+| Aspect | Template Method | Strategy |
+|---|---|---|
+| Mechanism | Inheritance (`extends`) | Composition (HAS-A) |
+| Varying behavior lives | INSIDE the object (overridden method) | In a SEPARATE object (injected) |
+| Relationship | IS-A | HAS-A |
+| What varies | Individual STEPS in a fixed flow | The WHOLE algorithm |
+| Swap at runtime? | No (fixed to subclass) | Yes (change the reference) |
+
+**Key**: both use interfaces. The difference is WHERE the varying behavior lives — inherited (inside) vs composed (separate injected object).
+
+---
+
+## Combining With Other Patterns
+
+Template Method often combines with:
+- **Adapter** — a step delegates to a wrapped third-party SDK
+- **Strategy** — a step could itself be a strategy (varying dimension)
+- **Factory Method** — a step creates an object (the factory method IS a template step)
+
+Example: Payment pipeline — Template Method for the flow (validate → charge → receipt), Adapter for the third-party provider, Hook for optional fraud detection.
+
+---
+
+## Real-World Template Method
+
+| Where | Fixed Flow | Varying Step |
+|---|---|---|
+| Spring `JdbcTemplate` | connect → execute → map → close | query + row mapping |
+| `HttpServlet.service()` | dispatch by HTTP method | doGet(), doPost() |
+| JUnit lifecycle | setup → test → teardown | @Test body |
+| Build pipeline | compile → test → package | project config |
+
+---
 
 ## Resources
+
 - [Refactoring Guru — Template Method](https://refactoring.guru/design-patterns/template-method)
+
+## Related
+
+- [Strategy](strategy.md) — composition vs inheritance
+- [Factory Method](../creational/factory-method.md) — often a step in a template
