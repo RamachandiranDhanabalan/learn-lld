@@ -47,6 +47,8 @@ Ask yourself:
 2. **Is it about combining objects/classes?** → Structural
 3. **Is it about how objects communicate?** → Behavioural
 
+**Before reaching for any pattern**, read [Pattern Selection — Choosing the Right Tool (or None)](pattern-selection.md). Most "behaviour varies" problems are solved best by `if/else` or an `enum`, not a pattern. Climb the complexity ladder only when a concrete force appears.
+
 ## Resources
 
 - [Refactoring Guru — All Patterns](https://refactoring.guru/design-patterns)

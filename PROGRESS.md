@@ -14,7 +14,7 @@
 |-------|------|--------|--------------|
 | Phase 1: OOP + SOLID | 01–07 | ⬜ | |
 | Phase 2: Creational + Structural | 08–14 | ⬜ | |
-| Phase 3: Behavioral Patterns | 15–21 | ⬜ | |
+| Phase 3: Behavioral Patterns | 15–21 | ✅ | 2026-09-19 |
 | Phase 4: Domain Modeling + UML | 22–28 | ⬜ | |
 | Phase 5: Core LLD Problems | 29–35 | ⬜ | |
 | Phase 6: Complex Domain Problems | 36–42 | ⬜ | |
@@ -62,7 +62,7 @@
 | 18 | Command | ⬜ | | |
 | 19 | Chain of Responsibility | ⬜ | | |
 | 20 | Template Method + Iterator | ⬜ | | |
-| 21 | Pattern Selection | ⬜ | | |
+| 21 | Pattern Selection | ✅ | topic + day-21.md + Day21PatternSelection.java | 2026-09-19 |
 
 ### Week 4 — Domain Modeling + UML
 
