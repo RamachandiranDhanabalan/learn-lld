@@ -68,8 +68,8 @@
 
 | Day | Topic | Status | Output | Date |
 |-----|-------|--------|--------|------|
-| 22 | Entity vs Value Object | ⬜ | | |
-| 23 | Aggregates + Ownership | ⬜ | | |
+| 22 | Entity vs Value Object | ✅ | topic + day-22.md + Day22EntityValueObject.java | 2026-09-19 |
+| 23 | Aggregates + Ownership | ✅ | topic + day-23.md + Day23Aggregates.java | 2026-09-21 |
 | 24 | UML + Activity Diagrams | ⬜ | | |
 | 25 | Class Diagrams | ⬜ | | |
 | 26 | Sequence + Activity | ⬜ | | |
