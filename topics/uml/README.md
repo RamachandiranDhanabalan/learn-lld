@@ -36,6 +36,16 @@
 | △——→ | Inheritance (IS-A) | Dog △→ Animal |
 | ----▷ | Implementation | ArrayList ----▷ List |
 
+## Detailed Notes
+
+| Topic | Day | Summary |
+|-------|-----|---------|
+| [Class Diagram Notation](class-diagram-notation.md) | 24 | Arrows, diamonds, triangles, multiplicity |
+| [Activity Diagrams](activity-diagrams.md) | 24 | Decision, fork/join, guards, swimlanes |
+| [Full Class Diagram Walkthrough (Parking Lot)](full-class-diagram-walkthrough.md) | 25 | 8-step procedure to draw a complete diagram |
+| [Sequence Diagrams (light)](sequence-diagrams.md) | 26 | Objects over time; call/return; alt/loop |
+| [State Diagrams](state-diagrams.md) | 27 | Lifecycle, transitions, guards, forbidden moves |
+
 ## Resources
 
 - [PlantUML](https://plantuml.com/) — text-based UML diagrams

@@ -15,7 +15,7 @@
 | Phase 1: OOP + SOLID | 01–07 | ⬜ | |
 | Phase 2: Creational + Structural | 08–14 | ⬜ | |
 | Phase 3: Behavioral Patterns | 15–21 | ✅ | 2026-09-19 |
-| Phase 4: Domain Modeling + UML | 22–28 | ⬜ | |
+| Phase 4: Domain Modeling + UML | 22–28 | ✅ | 2026-09-27 |
 | Phase 5: Core LLD Problems | 29–35 | ⬜ | |
 | Phase 6: Complex Domain Problems | 36–42 | ⬜ | |
 | Phase 7: Infrastructure LLD | 43–49 | ⬜ | |
@@ -70,11 +70,11 @@
 |-----|-------|--------|--------|------|
 | 22 | Entity vs Value Object | ✅ | topic + day-22.md + Day22EntityValueObject.java | 2026-09-19 |
 | 23 | Aggregates + Ownership | ✅ | topic + day-23.md + Day23Aggregates.java | 2026-09-21 |
-| 24 | UML + Activity Diagrams | ⬜ | | |
-| 25 | Class Diagrams | ⬜ | | |
-| 26 | Sequence + Activity | ⬜ | | |
-| 27 | State Diagrams | ⬜ | | |
-| 28 | Full OOAD Exercise | ⬜ | | |
+| 24 | UML + Activity Diagrams | ✅ | topics + day-24.md + movie-booking diagrams | 2026-09-23 |
+| 25 | Class Diagrams | ✅ | topic + day-25.md + library practice/solution (22/30) | 2026-09-24 |
+| 26 | Sequence + Activity | ✅ | topic + day-26.md (light touch per user) | 2026-09-25 |
+| 27 | State Diagrams | ✅ | topic + day-27.md + ride-lifecycle (25/30) | 2026-09-26 |
+| 28 | Full OOAD Exercise | ✅ | topic + day-28.md + food-delivery capstone (33/40) | 2026-09-27 |
 
 ### Week 5 — Core LLD Problems
 

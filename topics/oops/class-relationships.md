@@ -14,6 +14,22 @@ Association → Aggregation → Composition → Inheritance
 | Composition | Tight | Dependent | Exclusive/strong | ◆——→ (filled diamond) |
 | Inheritance | Tightest | Same | IS-A | △——→ (triangle) |
 
+> ⚠️ **The crisp line is composition vs. everything else — NOT association vs. aggregation.**
+> Association and aggregation (empty diamond) are **weakly distinguished** in UML; the spec
+> gives aggregation no enforced semantics beyond "a slightly stronger has-a." So any
+> "references a thing with an independent lifecycle" relationship (Ticket→Vehicle,
+> Spot→Vehicle) can be drawn as **either** — pick by feel and don't agonize.
+> **Composition** is the only one with real meaning: exclusive ownership + lifecycle
+> dependency (child dies with parent, belongs to exactly one parent). Get *that* right.
+>
+> Soft tiebreaker: lean **aggregation** if Y reads as "a part/component held by X"
+> (Playlist→Song, Spot→Vehicle-as-occupant); lean **association** if X just "points at"
+> a peer Y (Ticket→Vehicle, Order→CustomerId).
+>
+> If challenged in an interview, end the debate with: *"Aggregation and association are
+> weakly distinguished in UML — the meaningful decision is composition vs not. This isn't
+> composition because Y has an independent lifecycle."*
+
 ---
 
 ## Association — "uses" or "knows about"
